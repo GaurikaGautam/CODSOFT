@@ -1,0 +1,173 @@
+import sys 
+
+import random
+from PyQt5.QtWidgets import (QApplication , QWidget, QLabel, 
+                             QLineEdit, QPushButton, QVBoxLayout)
+from PyQt5.QtCore import Qt, QTimer
+
+class Game( QWidget):
+    def __init__(self):
+        super().__init__()
+        self.opt_label = QLabel("Choose ROCK/PAPER/SCISSORS:", self)
+        
+        self.get_button1= QPushButton("ROCK", self)
+        self.get_button2= QPushButton("PAPER", self)
+        self.get_button3= QPushButton("SCISSORS", self)
+        self.comp_emoji_label = QLabel( self)
+        self.player_emoji_label = QLabel(self)
+        self.description_label = QLabel(self)
+        self.player_label = QLabel("You Chose:", self)
+        self.comp_label = QLabel("Computer Chose:", self)
+
+        self.initUI()
+    def initUI(self):
+        self.setWindowTitle("ROCK PAPER SCISSORS GAME")
+
+        vbox= QVBoxLayout()
+        vbox.addWidget(self.opt_label)
+        
+        vbox.addWidget(self.get_button1)
+        vbox.addWidget(self.get_button2)
+        vbox.addWidget(self.get_button3)
+        vbox.addWidget(self.comp_label)
+        vbox.addWidget(self.comp_emoji_label)
+        vbox.addWidget(self.player_label)
+        vbox.addWidget(self.player_emoji_label)
+
+        vbox.addWidget(self.description_label)
+
+        self.setLayout(vbox)
+
+
+        self.opt_label.setAlignment(Qt.AlignCenter)
+        
+        self.comp_emoji_label.setAlignment(Qt.AlignCenter)
+        self.player_emoji_label.setAlignment(Qt.AlignCenter)
+        self.description_label.setAlignment(Qt.AlignCenter)
+        self.player_label.setAlignment(Qt.AlignCenter)
+        self.comp_label.setAlignment(Qt.AlignCenter)
+
+        self.player_label.setObjectName("player_label")
+        self.comp_label.setObjectName("comp_label")
+        self.opt_label.setObjectName("opt_label")
+        
+        self.get_button1.setObjectName("get_button1")
+        self.get_button2.setObjectName("get_button2")
+        self.get_button3.setObjectName("get_button3")
+        self.comp_emoji_label.setObjectName("comp_emoji_label")
+        self.player_emoji_label.setObjectName("player_emoji_label")
+        self.description_label.setObjectName("description_label")
+
+        self.setStyleSheet("""
+            QLabel, QPushButton{
+                font-family: calibri;
+            }
+            QLabel#opt_label{
+                font-size: 40px;
+                font-style: italic;
+            }
+            QLineEdit#opt_input{
+                font-size: 40px;
+            }
+            QPushButton#get_button1{
+                font-size: 30px;
+                font-weight: bold;
+            }
+            QPushButton#get_button2{
+                font-size: 30px;
+                font-weight: bold;
+            }
+            QPushButton#get_button3{
+                font-size: 30px;
+                font-weight: bold;
+            }
+            QLabel#comp_emoji_label{
+                font-size: 75px;
+            }
+            QLabel#player_emoji_label{
+                font-size: 100px;
+                font-family: Segoe UI emoji;
+            }
+            QLabel#description_label{
+                font-size: 50px;
+            }
+            QLabel#player_label, QLabel#comp_label {
+                font-size: 25px;
+                font-weight: bold;
+}
+
+        """)
+
+        self.get_button1.clicked.connect(lambda: self.display_emo("rock"))
+        self.get_button2.clicked.connect(lambda: self.display_emo("paper"))
+        self.get_button3.clicked.connect(lambda: self.display_emo("scissors"))
+        
+
+        
+
+   
+
+    def comp_cho(self):
+     options = ("rock", "paper", "scissors")
+     com_ch = random.choice(options)
+     emoji_map = {
+            'rock': '🥊',
+            'paper': '🗞️',
+            'scissors': '✂️'
+        }
+     return (com_ch, emoji_map[com_ch])
+
+
+
+    def logic(self, player, computer):
+     if player == computer:
+        return "It's a tie"
+     elif player == 'rock' and computer == 'scissors':
+        return "You win"
+     elif player == 'paper' and computer == 'rock':
+        return "You win"
+     elif player == 'scissors' and computer == 'paper':
+        return "You win"
+     else:
+        return "You Lose"
+
+
+    def display_emo(self, player_choice):
+        emoji_map = {
+            'rock': '🥊',
+            'paper': '🗞️',
+            'scissors': '✂️'
+        }
+
+        player_emoji = emoji_map.get(player_choice, "")
+        comp_choice, comp_emoji = self.comp_cho()
+
+    # Blink Step 1: Hide emojis briefly
+        def blink1():
+         self.player_emoji_label.clear()
+         self.comp_emoji_label.clear()
+
+    # Blink Step 2: Show emojis
+        def blink2():
+         self.player_emoji_label.setText(player_emoji)
+         self.comp_emoji_label.setText(comp_emoji)
+
+    # Show result after emojis
+        def show_result():
+         self.description_label.setText(self.logic(player_choice, comp_choice))
+
+    # Apply blinking effect using timers
+        QTimer.singleShot(100, blink1)       # 100ms: clear emojis
+        QTimer.singleShot(300, blink2)       # 300ms: show emojis
+        QTimer.singleShot(500, show_result)  # 500ms: show result
+
+
+
+       
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    game_app = Game()
+    game_app.show() 
+    sys.exit(app.exec_())
